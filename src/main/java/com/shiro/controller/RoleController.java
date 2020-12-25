@@ -2,6 +2,7 @@ package com.shiro.controller;
 
 
 import com.shiro.common.JsonData;
+import com.shiro.common.ResponseCode;
 import com.shiro.model.Role;
 import com.shiro.param.RoleParam;
 import com.shiro.service.RoleService;
@@ -26,6 +27,6 @@ public class RoleController {
     @GetMapping("/list")
     public JsonData lists(){
         List<Role> roleList =  roleService.getLists();
-        return new JsonData(true, "查询成功", roleList);
+        return new JsonData(true, "查询成功" ,roleList, ResponseCode.OK);
     }
 }

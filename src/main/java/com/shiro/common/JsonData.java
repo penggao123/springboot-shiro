@@ -14,32 +14,27 @@ public class JsonData<T> {
 
     private List<T> dataList;
 
-    public JsonData() {
+    private Integer code;
 
-    }
-
-    public JsonData(boolean flag, String msg) {
+    public JsonData(boolean flag, String msg, Integer code) {
         this.flag = flag;
         this.msg = msg;
+        this.code = code;
     }
 
-    public JsonData(boolean flag, String msg, T data) {
-        this.flag = flag;
-        this.msg = msg;
-        this.data = data;
-    }
-
-    public JsonData(boolean flag, String msg, List<T> dataList) {
-        this.flag = flag;
-        this.msg = msg;
-        this.dataList = dataList;
-    }
-
-    public JsonData(boolean flag, String msg, T data, List<T> dataList) {
+    public JsonData(boolean flag, String msg, T data, Integer code) {
         this.flag = flag;
         this.msg = msg;
         this.data = data;
+        this.code = code;
+    }
+
+
+    public JsonData(boolean flag, String msg, List<T> dataList, Integer code) {
+        this.flag = flag;
+        this.msg = msg;
         this.dataList = dataList;
+        this.code = code;
     }
 
     public boolean isFlag() {
@@ -74,13 +69,11 @@ public class JsonData<T> {
         this.dataList = dataList;
     }
 
-    @Override
-    public String toString() {
-        return "JsonData{" +
-                "flag=" + flag +
-                ", msg='" + msg + '\'' +
-                ", data=" + data +
-                ", dataList=" + dataList +
-                '}';
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
     }
 }

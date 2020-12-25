@@ -2,6 +2,7 @@ package com.shiro.controller;
 
 
 import com.shiro.common.JsonData;
+import com.shiro.common.ResponseCode;
 import com.shiro.model.User;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
@@ -61,7 +62,7 @@ public class LoginController {
     @RequestMapping("/unauthc")
     @ResponseBody
     public JsonData unauthc() {
-        return new JsonData(true, "请先登录");
+        return new JsonData(true, "请先登录", ResponseCode.UNAUTHORIZED);
     }
 
     /**
@@ -73,7 +74,7 @@ public class LoginController {
     public JsonData logout() {
         Subject subject = SecurityUtils.getSubject();
         subject.logout();
-        return new JsonData(true, "退出成功");
+        return new JsonData(true, "退出成功", ResponseCode.OK);
     }
 
 
