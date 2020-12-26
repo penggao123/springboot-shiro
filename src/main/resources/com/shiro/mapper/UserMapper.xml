@@ -135,4 +135,14 @@
     and delete_time is null
   </select>
 
+
+  <!--邮箱查询用户-->
+  <select id="findByEmail" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    from  user
+    where `email` = #{email}
+    and status = 1
+    and delete_time is null
+  </select>
+
 </mapper>

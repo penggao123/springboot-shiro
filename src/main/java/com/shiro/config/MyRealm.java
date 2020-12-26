@@ -21,6 +21,14 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
+/**
+  * @Author gaopeng
+ *
+ * AuthorizingRealm是用于做授权的
+ * AuthenticatingRealm用于做认证
+ * AuthorizingRealm继承AuthenticatingRealm
+ *
+  **/
 @Configuration(value = "myRealm")
 public class MyRealm extends AuthorizingRealm {
 
@@ -41,7 +49,7 @@ public class MyRealm extends AuthorizingRealm {
 
 
     /**
-     *
+     * 授权
      * @param principals
      * @return
      */
@@ -85,7 +93,7 @@ public class MyRealm extends AuthorizingRealm {
     }
 
     /**
-     *
+     * 认证
      * @param authenticationToken
      * @return
      * @throws AuthenticationException

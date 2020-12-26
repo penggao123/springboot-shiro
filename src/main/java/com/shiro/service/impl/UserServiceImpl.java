@@ -29,6 +29,11 @@ public class UserServiceImpl implements UserService {
         return userMapper.findByUserName(username);
     }
 
+    @Override
+    public User findByEmail(String email) {
+        return userMapper.findByEmail(email);
+    }
+
     /**
       * @Author gaopeng
       * @Description //添加用户
@@ -49,4 +54,6 @@ public class UserServiceImpl implements UserService {
         int saveResult = userMapper.insertSelective(user);
 
     }
+
+
 }

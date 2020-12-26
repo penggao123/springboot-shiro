@@ -9,4 +9,6 @@ public interface UserService {
     User findByUserName(@Param("username") String username);
 
     void save(UserParam param);
+
+    User findByEmail(String email);
 }
