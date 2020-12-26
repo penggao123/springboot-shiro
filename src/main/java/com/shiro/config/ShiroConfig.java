@@ -19,8 +19,10 @@ import org.apache.shiro.web.servlet.SimpleCookie;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.servlet.Filter;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Configuration
@@ -96,13 +98,15 @@ public class ShiroConfig {
         factoryBean.setLoginUrl("/common/unauthc");//登录地址
 //        factoryBean.setUnauthorizedUrl(); //未经授权页
         //shiro认证的；类为DefaultFilter
-        Map<String, String> filter = new HashMap<>();
-        filter.put("/common/getUserInfo", "authc");//需要登录
+        Map<String, String> filterMap = new HashMap<>();
+        filterMap .put("/common/getUserInfo", "authc");//需要登录
 //        filter.put("/common/logout", "logout");//退出 和subject.logout();一样的效果
-        filter.put("/common/login", "anon");
-        filter.put("/common/unauthc", "anon");
-
-        factoryBean.setFilterChainDefinitionMap(filter);
+        filterMap.put("/common/login", "anon");
+        filterMap.put("/common/unauthc", "anon");
+        Map<String, Filter> filter = new LinkedHashMap<>();
+        filter.put("jwt", new JwtFilter());
+        factoryBean.setFilters(filter);
+        factoryBean.setFilterChainDefinitionMap(filterMap);
         return factoryBean;
     }
 }

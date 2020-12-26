@@ -1,8 +1,11 @@
 package com.shiro.service;
 
+import com.shiro.common.JsonData;
 import com.shiro.model.User;
 import com.shiro.param.UserParam;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.Map;
 
 public interface UserService {
 
@@ -11,4 +14,8 @@ public interface UserService {
     void save(UserParam param);
 
     User findByEmail(String email);
+
+    Map<String,Object> login(User user) throws Exception;
+
+    JsonData tokenRefresh(String refreshToken);
 }

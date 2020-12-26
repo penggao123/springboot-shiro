@@ -4,9 +4,11 @@ package com.shiro.controller;
 import com.shiro.common.JsonData;
 import com.shiro.common.ResponseCode;
 import com.shiro.model.User;
+import com.shiro.service.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -17,30 +19,31 @@ import java.util.Map;
 public class LoginController {
 
 
+    @Autowired
+    private UserService userService;
+
+
     @PostMapping("/login")
-    public Object login(@RequestBody User user) {
+    public JsonData login(@RequestBody User user) {
 
-        Map<String, String> errorCode = new HashMap<>();
+        JsonData jsonData = null;
+        Map<String, Object> resultMap = null;
 
-        UsernamePasswordToken token = new UsernamePasswordToken(user.getName(), user.getPassword());
-
-        //获取当前登录用户
-        Subject subject = SecurityUtils.getSubject();
         try{
-            subject.login(token);
-            token.setRememberMe(true);//设置记住我(别忘记securityManager设置)
-//            user.getSession().setAttribute("currentUser",user.getPrincipal());
-            return "login succeed";
+            resultMap = userService.login(user);
+            jsonData = new JsonData(true, "登录成功", resultMap,ResponseCode.OK);
         } catch (UnknownAccountException uae) {
-            errorCode.put("errorMsg","不存在的用户名");
+            jsonData = new JsonData(true, "用户不存在", resultMap,ResponseCode.UNKNOWN_ACCOUNT);
         } catch (IncorrectCredentialsException ice) {
-            errorCode.put("errorMsg","密码不正确");
+            jsonData = new JsonData(true, "密码不正确", resultMap,ResponseCode.PASSWORD_WORD_ERROR);
         } catch (LockedAccountException lae) {
-            errorCode.put("errorMsg","账号被锁定");
+            jsonData = new JsonData(true, "账号被锁定", resultMap,ResponseCode.ACCOUNT_LOCK);
         } catch(AuthenticationException authe){
-            errorCode.put("errorMsg",authe.getMessage());
+            jsonData = new JsonData(true, "登录失败", resultMap,ResponseCode.SYSTEM_ERROR);
+        } catch (Exception e){
+            jsonData = new JsonData(true, "登录失败", resultMap,ResponseCode.SYSTEM_ERROR);
         }
-        return errorCode;
+        return jsonData;
     }
 
 
@@ -76,6 +79,11 @@ public class LoginController {
         Subject subject = SecurityUtils.getSubject();
         subject.logout();
         return new JsonData(true, "退出成功", ResponseCode.OK);
+    }
+
+    @PostMapping("/token/refresh")
+    public JsonData tokenRefresh(@RequestParam String refreshToken){
+        return userService.tokenRefresh(refreshToken);
     }
 
 
