@@ -1,7 +1,9 @@
 package com.shiro.config;
 
+import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
@@ -30,9 +32,15 @@ public class ShiroConfig {
      * @return
      */
     @Bean
-    public DefaultWebSecurityManager mySecurityManager(Realm myRealm) {
+    public DefaultWebSecurityManager mySecurityManager(AuthorizingRealm myRealm) {
 
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+
+        //将密码加密过程放在realm中进行,盐值需要在doGetAuthenticationInfo（认证方法中进行）
+        HashedCredentialsMatcher matcher = new HashedCredentialsMatcher();
+        matcher.setHashAlgorithmName("MD5");//加密方案
+        matcher.setHashIterations(12);//加密散列次数
+        myRealm.setCredentialsMatcher(matcher);
         securityManager.setRealm(myRealm);
         return securityManager;
     }

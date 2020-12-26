@@ -14,6 +14,7 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthenticatingRealm;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -102,6 +103,6 @@ public class MyRealm extends AuthorizingRealm {
             //用户不存在
             return null;
         }
-        return new SimpleAuthenticationInfo(user, user.getPassword(), "");//密码不进行加密
+        return new SimpleAuthenticationInfo(user, user.getPassword(), ByteSource.Util.bytes("salt"), "myRealm");//密码不进行加密
     }
 }
