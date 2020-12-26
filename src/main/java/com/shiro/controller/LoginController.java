@@ -28,6 +28,7 @@ public class LoginController {
         Subject subject = SecurityUtils.getSubject();
         try{
             subject.login(token);
+            token.setRememberMe(true);//设置记住我(别忘记securityManager设置)
 //            user.getSession().setAttribute("currentUser",user.getPrincipal());
             return "login succeed";
         } catch (UnknownAccountException uae) {

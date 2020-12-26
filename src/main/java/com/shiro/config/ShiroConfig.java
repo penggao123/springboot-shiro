@@ -5,13 +5,17 @@ import org.apache.shiro.authc.pam.AllSuccessfulStrategy;
 import org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy;
 import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
+import org.apache.shiro.cache.MemoryConstrainedCacheManager;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.realm.AuthenticatingRealm;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.servlet.Cookie;
+import org.apache.shiro.web.servlet.SimpleCookie;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -63,8 +67,19 @@ public class ShiroConfig {
           **/
         ModularRealmAuthenticator authenticator = new ModularRealmAuthenticator();
         authenticator.setAuthenticationStrategy(new AtLeastOneSuccessfulStrategy());
-
         securityManager.setAuthenticator(authenticator);
+
+        //--------------------设置记住我时长---------------
+//        CookieRememberMeManager meManager = new CookieRememberMeManager();
+//        Cookie cookie = new SimpleCookie("rememberMe");
+//        cookie.setHttpOnly(true);
+//        cookie.setMaxAge(31536000);
+//        meManager.setCookie(cookie);
+//        securityManager.setRememberMeManager(meManager);
+
+//        ---------------认证缓存----------------------
+//        MemoryConstrainedCacheManager memoryConstrainedCacheManager = new MemoryConstrainedCacheManager();
+//        securityManager.setCacheManager(memoryConstrainedCacheManager);
         return securityManager;
     }
 
