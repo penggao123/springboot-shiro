@@ -129,7 +129,7 @@ public class UserServiceImpl implements UserService {
         if (!verify) {
             throw new InvalidVoucherException();
         }
-        Map<String, Object> data = new HashMap<>(4);
+        Map<String, String> data = new HashMap<>(4);
 
         String passWordEncode = EncryptMd5.passWordEncode("MD5", user.getPassword(), ByteSource.Util.bytes("salt"), 12);
         // 生成jwtToken
@@ -140,6 +140,6 @@ public class UserServiceImpl implements UserService {
         data.put("token", newToken);
         // 刷新时所需token
         data.put("refreshToken", newRefreshToken);
-        return null;
+        return data;
     }
 }
