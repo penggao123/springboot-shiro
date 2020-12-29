@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.shiro.common.Constant;
 import com.shiro.common.JsonData;
 import com.shiro.common.ResponseCode;
-import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * @ClassName JwtFilter
@@ -24,36 +28,46 @@ import java.io.PrintWriter;
  * @Version 1.0
  **/
 
-public class JwtFilter extends BasicHttpAuthenticationFilter{
+public class JwtFilter extends BasicHttpAuthenticationFilter {
 
 
     /**
-      * @Author gaopeng
-      * @Description //
-      * @Date 20:24 2020/12/26
-      * @param
-      * @return boolean
-      **/
+     * @param
+     * @return boolean
+     * @Author gaopeng
+     * @Description //
+     * @Date 20:24 2020/12/26
+     **/
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         String token = ((HttpServletRequest) request).getHeader(Constant.TOKEN_HEADER_NAME);
         if (token != null) {
             return executeLogin(request, response);
         }
+        String path = ((HttpServletRequest) request).getServletPath();
+        if (!"/common/login".equals(path)) {
+            try {
+                ((HttpServletResponse) response).sendRedirect("/common/unauthc");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
         // 如果请求头不存在 Token，则可能是执行登陆操作或者是游客状态访问，无需检查 token，直接返回 true
         return true;
     }
 
 
     /**
-      * @Author gaopeng
-      * @Description //
-      * @Date 20:22 2020/12/26
-      * @param 
-      * @return boolean
-      **/
+     * @param
+     * @return boolean
+     * @Author gaopeng
+     * @Description //
+     * @Date 20:22 2020/12/26
+     **/
     @Override
-    protected boolean executeLogin(ServletRequest httpServletRequest, ServletResponse httpServletResponse)  {
+    protected boolean executeLogin(ServletRequest httpServletRequest, ServletResponse httpServletResponse) {
         HttpServletRequest request = (HttpServletRequest) httpServletRequest;
         HttpServletResponse response = (HttpServletResponse) httpServletResponse;
 
@@ -61,8 +75,10 @@ public class JwtFilter extends BasicHttpAuthenticationFilter{
         try {
             String token = request.getHeader(Constant.TOKEN_HEADER_NAME);
             JwtToken jwtToken = new JwtToken(token);
-            getSubject(request, response).login(jwtToken);
+            Subject subject = getSubject(httpServletRequest, httpServletResponse);
+            subject.login(jwtToken);
         } catch (Exception e) {
+            System.out.println(e);
             response.setStatus(HttpStatus.OK.value());
             response.setCharacterEncoding("utf-8");
             response.setContentType("application/json;charset=UTF-8");
@@ -80,6 +96,21 @@ public class JwtFilter extends BasicHttpAuthenticationFilter{
         // 如果没有抛出异常则代表登入成功，返回true
         return true;
     }
+
+
+    /**
+     * isAccessAllowed()返回false便会执行这个方法，
+     *
+     * @param request
+     * @param response
+     * @return 返回false，则过滤器的流程结束且不会执行访问controller的方法
+     * @throws Exception
+     */
+    @Override
+    public boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
+        return false;
+    }
+
 
 
     /**

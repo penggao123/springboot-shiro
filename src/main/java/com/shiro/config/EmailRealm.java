@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
  * @Version 1.0
  **/
 
-@Configuration(value = "emailRealm")
+//@Configuration(value = "emailRealm")
 public class EmailRealm extends AuthenticatingRealm {
 
     @Autowired

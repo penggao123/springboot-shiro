@@ -1,46 +1,64 @@
 package com.shiro.utils;
 
-import com.mmall.beans.Mail;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.HtmlEmail;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.util.Set;
 
 public class MailUtil {
 
-    private static Logger logger = LoggerFactory.getLogger(MailUtil.class);
+    /**
+     * 邮件的主体
+     */
+    private String subject;
 
-    public static boolean send(Mail mail) {
+    /**
+     * 邮件信息
+     */
 
+    private String message;
 
-        String from = "";
-        int port = 25;
-        String host = "";
-        String pass = "";
-        String nickname = "";
+    /**
+     * 收件人邮箱(可能有多个)
+     */
+    private Set<String>  receivers;
 
-        HtmlEmail email = new HtmlEmail();
-        try {
-            email.setHostName(host);
-            email.setCharset("UTF-8");
-            for (String str : mail.getReceivers()) {
-                email.addTo(str);
-            }
-            email.setFrom(from, nickname);
-            email.setSmtpPort(port);
-            email.setAuthentication(from, pass);
-            email.setSubject(mail.getSubject());
-            email.setMsg(mail.getMessage());
-            email.send();
-            logger.info("{} 发送邮件到 {}", from, StringUtils.join(mail.getReceivers(), ","));
-            return true;
-        } catch (EmailException e) {
-            logger.error(from + "发送邮件到" + StringUtils.join(mail.getReceivers(), ",") + "失败", e);
-            return false;
-        }
+    public MailUtil() {
     }
 
-}
+    public MailUtil(String subject, String message, Set<String> receivers) {
+        this.subject = subject;
+        this.message = message;
+        this.receivers = receivers;
+    }
 
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Set<String> getReceivers() {
+        return receivers;
+    }
+
+    public void setReceivers(Set<String> receivers) {
+        this.receivers = receivers;
+    }
+
+    @Override
+    public String toString() {
+        return "Mail{" +
+                "subject='" + subject + '\'' +
+                ", message='" + message + '\'' +
+                ", receivers=" + receivers +
+                '}';
+    }
+}

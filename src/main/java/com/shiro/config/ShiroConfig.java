@@ -7,6 +7,8 @@ import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.cache.MemoryConstrainedCacheManager;
 import org.apache.shiro.mgt.DefaultSecurityManager;
+import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
+import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.realm.AuthenticatingRealm;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -44,7 +46,7 @@ public class ShiroConfig {
      * @return
      */
     @Bean
-    public DefaultWebSecurityManager mySecurityManager(AuthorizingRealm myRealm, AuthenticatingRealm emailRealm) {
+    public DefaultWebSecurityManager mySecurityManager(AuthorizingRealm myRealm, AuthenticatingRealm jwtRealm) {
 
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
 
@@ -54,10 +56,10 @@ public class ShiroConfig {
         matcher.setHashAlgorithmName("MD5");//加密方案
         matcher.setHashIterations(12);//加密散列次数
         myRealm.setCredentialsMatcher(matcher);//用户名认证realm
-        emailRealm.setCredentialsMatcher(matcher);//邮箱认证realm
+//        emailRealm.setCredentialsMatcher(matcher);//邮箱认证realm
 
 //        -----------------------realm认证----------------------------
-        securityManager.setRealms(Arrays.asList(myRealm, emailRealm));
+        securityManager.setRealms(Arrays.asList(myRealm, jwtRealm));
 //        securityManager.setRealm(myRealm);
 
 //        -----------------------多realm认证策略(默认：)-------------------------------
@@ -67,9 +69,9 @@ public class ShiroConfig {
           * FirstSuccessfulStrategy：多个realm中，第一个realm成功才能认证成功
           *
           **/
-        ModularRealmAuthenticator authenticator = new ModularRealmAuthenticator();
-        authenticator.setAuthenticationStrategy(new AtLeastOneSuccessfulStrategy());
-        securityManager.setAuthenticator(authenticator);
+//        ModularRealmAuthenticator authenticator = new ModularRealmAuthenticator();
+//        authenticator.setAuthenticationStrategy(new AtLeastOneSuccessfulStrategy());
+//        securityManager.setAuthenticator(authenticator);
 
         //--------------------设置记住我时长---------------
 //        CookieRememberMeManager meManager = new CookieRememberMeManager();
@@ -82,6 +84,14 @@ public class ShiroConfig {
 //        ---------------认证缓存----------------------
 //        MemoryConstrainedCacheManager memoryConstrainedCacheManager = new MemoryConstrainedCacheManager();
 //        securityManager.setCacheManager(memoryConstrainedCacheManager);
+
+
+//      ---------------------------------关闭shiro的session-------------------------------------
+        DefaultSubjectDAO subjectDAO = new DefaultSubjectDAO();
+        DefaultSessionStorageEvaluator defaultSessionStorageEvaluator = new DefaultSessionStorageEvaluator();
+        defaultSessionStorageEvaluator.setSessionStorageEnabled(false);
+        subjectDAO.setSessionStorageEvaluator(defaultSessionStorageEvaluator);
+        securityManager.setSubjectDAO(subjectDAO);
         return securityManager;
     }
 
@@ -93,19 +103,22 @@ public class ShiroConfig {
     public ShiroFilterFactoryBean  getShiroFilterFactoryBean(DefaultSecurityManager mySecurityManager) {
 
         ShiroFilterFactoryBean factoryBean = new ShiroFilterFactoryBean();
-
         factoryBean.setSecurityManager(mySecurityManager);
+
+
         factoryBean.setLoginUrl("/common/unauthc");//登录地址
 //        factoryBean.setUnauthorizedUrl(); //未经授权页
         //shiro认证的；类为DefaultFilter
         Map<String, String> filterMap = new HashMap<>();
-        filterMap .put("/common/getUserInfo", "authc");//需要登录
+//        filterMap .put("/common/getUserInfo", "authc");//需要登录
 //        filter.put("/common/logout", "logout");//退出 和subject.logout();一样的效果
-        filterMap.put("/common/login", "anon");
+//        filterMap.put("/common/login", "anon");
         filterMap.put("/common/unauthc", "anon");
+
         Map<String, Filter> filter = new LinkedHashMap<>();
         filter.put("jwt", new JwtFilter());
         factoryBean.setFilters(filter);
+        filterMap.put("/**", "jwt");
         factoryBean.setFilterChainDefinitionMap(filterMap);
         return factoryBean;
     }

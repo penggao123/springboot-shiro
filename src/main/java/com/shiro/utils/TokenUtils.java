@@ -35,12 +35,12 @@ public class TokenUtils {
     /**
      * 获得token中的信息无需secret解密也能获得
      * @param token token
-     * @return token中包含的用户手机号
+     * @return token中包含的用户名称
      */
-    public static String getPhone(String token) {
+    public static String getName(String token) {
         try {
             DecodedJWT jwt = JWT.decode(token);
-            return jwt.getClaim("phone").asString();
+            return jwt.getClaim("name").asString();
         } catch (JWTDecodeException e) {
             return null;
         }
@@ -88,7 +88,7 @@ public class TokenUtils {
         try {
             algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
-                    .withClaim("phone", phone)
+                    .withClaim("name", phone)
                     .withClaim("userId", String.valueOf(userId))
                     .withExpiresAt(date)
                     .sign(algorithm);
@@ -111,7 +111,7 @@ public class TokenUtils {
             // 根据密码生成JWT效验器
             Algorithm algorithm = Algorithm.HMAC256(secret);
             JWTVerifier verifier = JWT.require(algorithm)
-                    .withClaim("phone", getPhone(token))
+                    .withClaim("name", getName(token))
                     .withClaim("userId", getUserId(token))
                     .build();
             // 效验TOKEN

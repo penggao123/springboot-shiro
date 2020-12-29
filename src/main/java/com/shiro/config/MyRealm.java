@@ -7,7 +7,9 @@ import com.shiro.model.Role;
 import com.shiro.model.User;
 import com.shiro.model.UserRole;
 import com.shiro.service.*;
+import com.shiro.utils.TokenUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -111,6 +113,6 @@ public class MyRealm extends AuthorizingRealm {
             //用户不存在
             return null;
         }
-        return new SimpleAuthenticationInfo(user, user.getPassword(), ByteSource.Util.bytes("salt"), "myRealm");//密码不进行加密
+        return new SimpleAuthenticationInfo(user, user.getPassword(), ByteSource.Util.bytes("salt"), "myRealm");
     }
 }

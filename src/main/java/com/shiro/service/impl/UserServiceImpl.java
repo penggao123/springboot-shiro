@@ -39,15 +39,17 @@ public class UserServiceImpl implements UserService {
         //获取当前登录用户
         Subject subject = SecurityUtils.getSubject();
         subject.login(token);
+        User users = userMapper.findByUserName(user.getName());
 //        token.setRememberMe(true);//设置记住我(别忘记securityManager设置)
 //            user.getSession().setAttribute("currentUser",user.getPrincipal());
         User userByUserName = userMapper.findByUserName(user.getName());
         // 生成jwtToken
-        String acquireToken = TokenUtils.createToken(user.getName(), user.getId(), user.getPassword(), Constant.TOKEN_EXPIRE_TIME);
+        String password = EncryptMd5.passWordEncode("MD5", user.getPassword(), ByteSource.Util.bytes("salt"), 12);
+        String acquireToken = TokenUtils.createToken(user.getName(), users.getId(), password, Constant.TOKEN_EXPIRE_TIME);
         // 生成刷新token
-        String refreshToken = TokenUtils.createToken(user.getName(), user.getId(), user.getPassword(), Constant.TOKEN_REFRESH_TIME);
+        String refreshToken = TokenUtils.createToken(user.getName(), users.getId(), password, Constant.TOKEN_REFRESH_TIME);
 
-        hashMap.put("token", token);
+        hashMap.put("token", acquireToken);
         // 刷新时所需token
         hashMap.put("refreshToken", refreshToken);
         return hashMap;
@@ -91,7 +93,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public JsonData tokenRefresh(String refreshToken) {
-        String userName = TokenUtils.getPhone(refreshToken);
+        String userName = TokenUtils.getName(refreshToken);
         User user = userMapper.findByUserName(userName);
         boolean verify = TokenUtils.verify(refreshToken, user.getPassword());
         if (!verify) {

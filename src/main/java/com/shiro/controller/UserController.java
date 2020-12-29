@@ -5,6 +5,7 @@ import com.shiro.common.ResponseCode;
 import com.shiro.param.UserParam;
 import com.shiro.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +24,7 @@ public class UserController {
       * @param
       * @return com.shiro.common.JsonData
       **/
+    @PostMapping("/save")
     public JsonData save(@RequestBody UserParam param){
         userService.save(param);
         return new JsonData(true, "添加成功", ResponseCode.OK);
