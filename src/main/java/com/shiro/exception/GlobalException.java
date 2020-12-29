@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalException {
-
     @ExceptionHandler(AuthorizationException.class)
     @ResponseBody
     public JsonData shiroAuthorizationException() {

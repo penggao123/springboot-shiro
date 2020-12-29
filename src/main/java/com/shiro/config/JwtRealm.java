@@ -34,7 +34,6 @@ public class JwtRealm extends AuthenticatingRealm {
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
-        System.out.println(auth);
         String token = (String) auth.getCredentials();
         // 获得phone
         String userName = TokenUtils.getName(token);

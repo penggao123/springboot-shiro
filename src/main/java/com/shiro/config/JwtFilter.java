@@ -78,7 +78,6 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             Subject subject = getSubject(httpServletRequest, httpServletResponse);
             subject.login(jwtToken);
         } catch (Exception e) {
-            System.out.println(e);
             response.setStatus(HttpStatus.OK.value());
             response.setCharacterEncoding("utf-8");
             response.setContentType("application/json;charset=UTF-8");
@@ -89,7 +88,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
                 e1.printStackTrace();
                 return false;
             }
-            writer.print(JSON.toJSONString(new JsonData(false, "token错误", ResponseCode.TOKEN_ERROR)));
+            writer.print(JSON.toJSONString(new JsonData(false, "无效的凭证，请重新登录", ResponseCode.TOKEN_ERROR)));
 
             return false;
         }
