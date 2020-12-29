@@ -3,12 +3,14 @@ package com.shiro.service.impl;
 import com.shiro.common.Constant;
 import com.shiro.common.JsonData;
 import com.shiro.common.ResponseCode;
+import com.shiro.exception.InvalidVoucherException;
 import com.shiro.mapper.UserMapper;
 import com.shiro.model.User;
 import com.shiro.param.UserParam;
 import com.shiro.service.UserService;
 import com.shiro.utils.EncryptMd5;
 import com.shiro.utils.TokenUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
@@ -109,5 +111,35 @@ public class UserServiceImpl implements UserService {
         // 刷新时所需token
         resultMap.put("refreshToken", newRefreshToken);
         return new JsonData(true, "获取成功", resultMap,ResponseCode.OK);
+    }
+
+    /**
+     * 刷新token
+     * @param token
+     * @return
+     */
+    @Override
+    public Map<String, String> refreshToken(String token) {
+        String name = TokenUtils.getName(token);
+        if (StringUtils.isBlank(name)) {
+            throw new InvalidVoucherException();
+        }
+        User user = userMapper.findByUserName(name);
+        boolean verify = TokenUtils.verify(token, user.getPassword());
+        if (!verify) {
+            throw new InvalidVoucherException();
+        }
+        Map<String, Object> data = new HashMap<>(4);
+
+        String passWordEncode = EncryptMd5.passWordEncode("MD5", user.getPassword(), ByteSource.Util.bytes("salt"), 12);
+        // 生成jwtToken
+        String newToken = TokenUtils.createToken(user.getName(), user.getId(), passWordEncode, Constant.TOKEN_EXPIRE_TIME);
+        // 生成刷新token
+        String newRefreshToken = TokenUtils.createToken(user.getName(), user.getId(), passWordEncode, Constant.TOKEN_REFRESH_TIME);
+        // toke
+        data.put("token", newToken);
+        // 刷新时所需token
+        data.put("refreshToken", newRefreshToken);
+        return null;
     }
 }

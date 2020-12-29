@@ -18,4 +18,6 @@ public interface UserService {
     Map<String,Object> login(User user) throws Exception;
 
     JsonData tokenRefresh(String refreshToken);
+
+    Map<String, String> refreshToken(String token);
 }

@@ -20,5 +20,12 @@ public class ResponseCode {
 
     public static final Integer TOKEN_ERROR = 601;//token失效
 
+    public static final Integer PARAM_ERROR = 701;//参数非法
+
+    public static final Integer HTTP_REQUEST_TYPE_ERROR = 801;//http请求方式错误
+
+
+
+
 
 }

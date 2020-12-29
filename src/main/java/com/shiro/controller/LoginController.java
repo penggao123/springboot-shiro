@@ -1,16 +1,19 @@
 package com.shiro.controller;
 
 
+import com.shiro.common.Constant;
 import com.shiro.common.JsonData;
 import com.shiro.common.ResponseCode;
 import com.shiro.model.User;
 import com.shiro.service.UserService;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @RequestMapping("/common")
@@ -90,6 +93,23 @@ public class LoginController {
     @PostMapping("/token/refresh")
     public JsonData tokenRefresh(@RequestParam String refreshToken) {
         return userService.tokenRefresh(refreshToken);
+    }
+
+
+    /**
+     * 刷新token
+     * @return
+     */
+    @GetMapping("/refreshToken")
+    @ResponseBody
+    public JsonData refreshToken(HttpServletRequest request) {
+        String token = request.getHeader(Constant.TOKEN_HEADER_NAME);
+        if (StringUtils.isBlank(token)) {
+            return new JsonData(true, "非法参数", ResponseCode.PARAM_ERROR);
+        }
+        Map<String, String> resultMap = userService.refreshToken(token);
+        return new JsonData(true, "获取成功", resultMap, ResponseCode.OK);
+
     }
 
 
